@@ -7,7 +7,7 @@ class Enemy(arcade.SpriteCircle):
         super().__init__(15, arcade.color.RED)
         self.center_x = x
         self.center_y = y
-        self.speed = random.randint(50, 80)
+        self.speed = 60
         self.health = 60
         self.change_x = 0
         self.change_y = 0
@@ -23,3 +23,7 @@ class Enemy(arcade.SpriteCircle):
         
         self.change_x = dx / dist * self.speed
         self.change_y = dy / dist * self.speed
+    
+    def take_damage(self, amount):
+        self.health -= amount
+        return self.health <= 0
