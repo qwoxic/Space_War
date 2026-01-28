@@ -1,24 +1,41 @@
 import arcade
+import math
 
-class Player(arcade.SpriteCircle):
+class Player(arcade.Sprite):
     def __init__(self, x, y):
-        super().__init__(20, arcade.color.BLUE)
+        super().__init__(":resources:images/space_shooter/playerShip1_blue.png", scale=0.7)
         self.center_x = x
         self.center_y = y
         self.health = 100
         self.max_health = 100
         self.change_x = 0
         self.change_y = 0
+        self.invincible_timer = 0
+        self.angle = 0
 
     def update(self, delta_time):
         self.center_x += self.change_x * delta_time
         self.center_y += self.change_y * delta_time
         
-        self.center_x = max(20, min(1004, self.center_x))
-        self.center_y = max(20, min(748, self.center_y))
+        if self.change_x != 0 or self.change_y != 0:
+            self.angle = math.degrees(math.atan2(-self.change_x, self.change_y))
+        
+        self.center_x = max(40, min(1004, self.center_x))
+        self.center_y = max(40, min(748, self.center_y))
+        
+        if self.invincible_timer > 0:
+            self.invincible_timer -= delta_time
+            t = self.invincible_timer * 8
+            self.alpha = int(150 + 105 * abs(math.sin(t)))
+        else:
+            self.alpha = 255
 
     def take_damage(self, amount):
-        self.health -= amount
-        if self.health <= 0:
-            return True
+        if self.invincible_timer <= 0:
+            self.health -= amount
+            self.invincible_timer = 0.8
+            if self.health <= 0:
+                self.health = 0
+                self.alpha = 100
+            return self.health <= 0
         return False
